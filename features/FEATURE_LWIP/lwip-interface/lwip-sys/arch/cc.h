@@ -45,7 +45,11 @@ typedef int32_t            s32_t;
 typedef uintptr_t          mem_ptr_t; 
 
 /* Define (sn)printf formatters for these lwIP types */
+#if 0 // origin
 #define U16_F "hu"
+#else // for EV3RT -- ertl-liyixiao
+#define U16_F "d"
+#endif
 #define S16_F "hd"
 #define X16_F "hx"
 #define U32_F "lu"
@@ -106,7 +110,16 @@ typedef uintptr_t          mem_ptr_t;
 void assert_printf(char *msg, int line, char *file);
 
 /* Plaform specific diagnostic output */
+#if 0 // origin
 #define LWIP_PLATFORM_DIAG(vars) printf vars
+#else // for EV3RT -- ertl-liyixiao
+#include <kernel.h>
+#include <t_syslog.h>
+#include <t_stdlib.h>
+#define LWIP_PLATFORM_DIAG(vars) Xprintf vars
+#define Xprintf(...) syslog(LOG_ERROR, ##__VA_ARGS__)
+//#define Xprintf(msg, ...) fprintf(stderr, msg "\r\n", ##__VA_ARGS__)
+#endif
 #define LWIP_PLATFORM_ASSERT(flag) { assert_printf((flag), __LINE__, __FILE__); }
 #else
 #define LWIP_PLATFORM_DIAG(msg) { ; }

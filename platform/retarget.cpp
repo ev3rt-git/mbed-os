@@ -634,7 +634,12 @@ extern "C" void exit(int return_code) {
         mbed_die();
     }
 
+#if 0 // origin
     while (1);
+#else // a temp workaround for debug -- ertl-liyixiao
+    extern void wait_ms(int ms);
+    while (1) wait_ms(100);
+#endif
 }
 
 #if !defined(TOOLCHAIN_GCC_ARM) && !defined(TOOLCHAIN_GCC_CR)

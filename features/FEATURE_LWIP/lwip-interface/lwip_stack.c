@@ -478,8 +478,8 @@ int mbed_lwip_bringup(bool dhcp, const char *ip, const char *netmask, const char
         if (ret == SYS_ARCH_TIMEOUT) {
             return NSAPI_ERROR_DHCP_FAILURE;
         }
-        lwip_connected = true;
     }
+        lwip_connected = true;
 
 #if ADDR_TIMEOUT
     // If address is not for preferred stack waits a while to see
@@ -826,6 +826,19 @@ static int mbed_lwip_setsockopt(nsapi_stack_t *stack, nsapi_socket_t handle, int
                 s->conn->pcb.tcp->so_options &= ~SOF_REUSEADDR;
             }
             return 0;
+
+        case NSAPI_BROADCAST:
+            if (optlen != sizeof(int)) {
+                return NSAPI_ERROR_UNSUPPORTED;
+            }
+
+            if (*(int *)optval) {
+                s->conn->pcb.udp->so_options |= SOF_BROADCAST; // FIXME: support TCP?
+            } else {
+                s->conn->pcb.udp->so_options &= ~SOF_BROADCAST;
+            }
+            return 0;
+
 
         default:
             return NSAPI_ERROR_UNSUPPORTED;
